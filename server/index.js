@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { createPost } from './mcp.tool.js';
 import { z } from 'zod';
 
 const app = express();
@@ -30,11 +31,35 @@ server.tool(
             content: [
             {
                 type: 'text',
-                text: `The sum of ${a} and ${b} is ${a + b}.`
+                text: `The sum of ${a} and ${b} is ${a + b}.\n`
             }]
         };
     }
 );
+
+server.tool(
+    'twitter-X-post',
+    'Create and post a tweet on X formally known as Twitter',
+    {
+        status: z.string().describe('The content of the tweet')
+    }, 
+    async (arg) => {
+        const { status } = arg;
+        console.log(`Creating tweet with status: ${status}`);
+        const result = await createPost(status);
+        console.log('Tweet result:', result);
+
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: `Tweet created successfully: ${result.content[0].text}\n`
+                }
+            ]
+        };
+    }
+);
+
 
 const transports = {};
 

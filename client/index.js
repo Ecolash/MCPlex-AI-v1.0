@@ -40,7 +40,7 @@ async function main() {
             }
         }
     });
-    console.log('Tool list:', tools_);
+    // console.log('Tool list:', tools_);
     await chatLoop();
 }
 
@@ -77,6 +77,7 @@ async function chatLoop() {
             }
         });
 
+        // console.log('AI response:', response.candidates);
         const functionCall = response.candidates[0].content.parts[0].functionCall;
         const responseText = response.candidates[0].content.parts[0].text;
 
