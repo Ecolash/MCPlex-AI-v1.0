@@ -48,11 +48,11 @@ const key = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: key });
 
 async function chatLoop() {
-    console.log('\nWelcome to your X GenAI chat!');
-    console.log("Type 'EXIT' to quit the chat.\n");
+    console.log('\n\x1b[36mWelcome to your X GenAI chat!\x1b[0m');
+    console.log("\x1b[33mType 'EXIT' to quit the chat.\x1b[0m\n");
 
     while (true) {
-        const question = await rl.question('You: ');
+        const question = await rl.question('\n\x1b[36m> \x1b[32mYou:\x1b[0m ');
 
         if (question.trim().toUpperCase() === 'EXIT') {
             console.log('\n👋 Exiting chat. Goodbye!');
@@ -92,14 +92,14 @@ async function chatLoop() {
             });
             // console.log('Tool response:', ans);
             const toolResponse = ans.content.map(part => part.text).join(' ');
-            console.log('AI: ', toolResponse);
+            console.log('\x1b[1m\x1b[36mAI:\x1b[0m', toolResponse);
             chatHistory.push({
                 role: 'model',
                 parts: [{ text: toolResponse, type: 'text' }]
             });
             continue;
         }
-        console.log('AI:', responseText);
+        console.log(`\x1b[1m\x1b[36mAI:\x1b[0m \x1b[32m${responseText}\x1b[0m`);
 
         chatHistory.push({
             role: 'model',
