@@ -1,11 +1,30 @@
 {
+  "name": "server",
+  "module": "index.ts",
   "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "tsx": "^4.19.3",
+    "@types/xml2js": "^0.4.14"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.11.0",
+    "@modelcontextprotocol/sdk": "^1.10.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "xml2js": "^0.6.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "twitter-api-v2": "^1.23.0",
-    "xml2js": "^0.6.2",
-    "zod": "^3.24.4"
+    "twitter-api-v2": "^1.22.0",
+    "zod": "^3.24.3"
   }
 }
