@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { parseStringPromise } from 'xml2js';
-import { createPost } from './mcp.tool.js';
+import { createPost } from './twitter.tool.js';
 
 import fs from 'fs';
 import path from 'path';
