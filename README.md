@@ -1,27 +1,26 @@
 # MCPlex-AI v1.0
 
-This document provides an introduction to MCPlex-AI v1.0, a system that integrates Google's Gemini large language model with external tools through a Model Context Protocol (MCP). The document covers the system's purpose, high-level architecture, key components, and interaction patterns. For detailed information about specific components, please refer to their respective wiki pages.
+This document provides an introduction to MCPlex-AI v1.0, a system that integrates Google's Gemini large language model with external tools through a Model Context Protocol (MCP). Unlike typical chatbot frontends, MCPlex-AI runs entirely from the command line, giving users fine-grained control and a minimalistic interface to execute intelligent queries and trigger tool-based actions — all from a single terminal. The document covers the system's purpose, high-level architecture, key components, and interaction patterns. For detailed information about specific components, please refer to their respective sections:
 
-## System Purpose
+## Purpose
 
-MCPlex-AI v1.0 is designed to enhance the capabilities of large language models (specifically Google's Gemini) by enabling them to interact with external tools and APIs. This allows the AI to:
+MCPlex-AI v1.0 is designed to enhance the capabilities of large language models (Google Gemini-2.0) by enabling them to interact with external tools and APIs. This allows the AI to:
 
 1) Access real-time information (news, Wikipedia, etc.)
 2) Perform specific actions (post to Twitter, search files)
 3) Calculate results (truth tables, mathematical operations)
 4) Retrieve data from external services (GitHub, OMDB)
 
-The system follows a client-server architecture where the client handles user interaction and AI communication, while the server manages tool execution.
-
 ## System Architecture
 
-MCPlex-AI consists of three primary components:
+The system follows a client-server architecture where the client handles user interaction and AI communication, while the server manages tool execution. MCPlex-AI consists of three primary components:
 
-* **MCP Client**: Handles user interaction, communicates with Google Gemini AI, and sends tool execution requests to the server
-* **MCP Server**: Manages tool registration and execution, handles client requests
-* **Tool System**: Collection of tools that extend the AI's capabilities
+* **MCP Client (client/index.js)**: Handles user chat with Google Gemini AI, sends tool execution requests to the server
+* **MCP Server (server/index.js)**: Manages tool registration and execution, handles client requests
+* **Tool System (server/tools.js)**: Collection of tools that extend the AI's capabilities
 
 The diagram below illustrates the high-level architecture of the system:
+
 ![MCPlex-AI Architecture](Architecture.png)
 
 ## Available Tools
@@ -43,25 +42,21 @@ The diagram below illustrates the high-level architecture of the system:
 ### 1. Print Menu Tool
 
 **Name**: print-menu
-
 **Description**: Prints what the MCP server can do with the available tools, provides descriptions of tools.
 
 **Input Parameters**:
 - title (string, optional): Optional title for the menu
 - items (array of strings): List of tool descriptions to display
-
-**Output**: Formatted text displaying the menu items with numbering.
+- **Output**: Formatted text displaying the menu items with numbering.
 
 ### 2. News by Topic Tool
 
 **Name**: news-by-topic
-
 **Description**: Fetches recent news headlines for a given topic using Google News.
 
 **Input Parameters**:
 - topic (string): The topic to search news for (e.g., AI, economy, cricket)
-
-**Output**: Formatted text containing up to 5 recent news headlines with links.
+- **Output**: Formatted text containing up to 5 recent news headlines with links.
 
 **Example Response**:
 
@@ -75,59 +70,34 @@ Top News for "AI":
 [5] New research shows AI models becoming more energy efficient Read more
 ```
 
-**Sources**: server/tools.js (74-128)
-
-### 3. Adder Tool
+### 3. Adder Tool (First tool for basic testing)
 
 **Name**: adder
-
 **Description**: Adds two numbers together.
 
 **Input Parameters**:
 - a (number): The first number
 - b (number): The second number
-
-**Output**: Text containing the sum of the two numbers.
-
-**Example Response**:
-```
-Result: The sum of 5 and 7 is 12.
-```
-
-**Sources**: 
-- server/tools.js (131-153)
-- server/tools-basic.js (23-45)
+- **Output**: Text containing the sum of the two numbers.
 
 ### 4. Twitter/X Post Tool
 
 **Name**: twitter-X-post
-
 **Description**: Creates and posts a tweet on X (formerly Twitter).
 
 **Input Parameters**:
 - status (string): The content of the tweet
-
-**Output**: Confirmation text with the posted tweet content.
-
-**Example Response**:
-```
-Tweet created successfully: Just posted this from MCPlex-AI! #AI #automation
-```
-
-**Note**: Requires Twitter API configuration in server environment.
-
-**Sources**: server/tools.js (156-177)
+- **Output**: Confirmation text with the posted tweet ID.
+- **Note**: Requires Twitter API configuration in server environment.
 
 ### 5. Wikipedia Search Tool
 
 **Name**: wikipedia-search
-
 **Description**: Searches Wikipedia and returns the summary of the top result.
 
 **Input Parameters**:
 - query (string): The search term for Wikipedia
-
-**Output**: Title, summary extract, and link to the Wikipedia article.
+- **Output**: Title, summary extract, and link to the Wikipedia article.
 
 **Example Response**:
 ```
@@ -138,19 +108,15 @@ Artificial intelligence (AI) is intelligence demonstrated by machines, as oppose
 Read more on Wikipedia
 ```
 
-**Sources**: server/tools.js (180-225)
-
 ### 6. GitHub Repo Info Tool
 
 **Name**: github-repo-info
-
 **Description**: Fetches information about a public GitHub repository.
 
 **Input Parameters**:
 - owner (string): GitHub username or organization
 - repo (string): Repository name
-
-**Output**: Formatted text containing repository details, including stars, forks, and open issues.
+- **Output**: Formatted text containing repository details, including stars, forks, and open issues.
 
 **Example Response**:
 ```
@@ -163,20 +129,16 @@ Read more on Wikipedia
 🔗 Repository Link: https://github.com/octocat/Hello-World
 ```
 
-**Sources**: server/tools.js (228-268)
-
 ### 7. Movie Ratings Tool
 
 **Name**: movie-ratings
-
 **Description**: Gets ratings and information for movies or TV shows from various sources.
 
 **Input Parameters**:
 - title (string): The title of the movie or TV show to search for
 - year (number, optional): Release year to narrow down search results
 - plot (enum: 'short' or 'full', default: 'short', optional): Length of plot summary
-
-**Output**: Comprehensive formatted information about the movie/show, including ratings from different sources, plot summary, and additional details.
+- **Output**: Comprehensive formatted information about the movie/show, including ratings from different sources, plot summary, and additional details.
 
 **Example Response**:
 ```
@@ -207,8 +169,6 @@ View on IMDB
 
 **Note**: Requires OMDB API key configuration in server environment.
 
-**Sources**: server/tools.js (271-354)
-
 ### 8. Local File Search Tool
 
 **Name**: local-file-search
@@ -219,8 +179,7 @@ View on IMDB
 - searchTerm (string): Term to search for in filenames or content
 - directory (string, default: './'): Directory to search in
 - fileType (enum: 'all', 'name', 'extension', 'content', default: 'all'): Type of search
-
-**Output**: Formatted text containing search results with file details including name, size, and last modified date.
+- **Output**: Formatted text containing search results with file details including name, size, and last modified date.
 
 **Example Response**:
 ```
@@ -243,18 +202,14 @@ Filename                Size        Last Modified
  7) server-config.js     7.8 KB     2023-03-01 14:30:42
 ```
 
-**Sources**: server/tools.js (356-522)
-
 ### 9. Truth Table Generator Tool
 
 **Name**: truth_table
-
 **Description**: Generates the truth table of a boolean expression.
 
 **Input Parameters**:
 - expression (string): Boolean expression using variables like A, B, C and operators like &&, ||, !
-
-**Output**: Formatted truth table showing all possible combinations of variable values and the resulting expression evaluation.
+- **Output**: Formatted truth table showing all possible combinations of variable values and the resulting expression evaluation.
 
 **Example Response**:
 ```
@@ -276,20 +231,17 @@ T   T   T |   T
 ### 10. Define Word Tool
 
 **Name**: define_word
-
 **Description**: Gets the definition and example usage of a word.
 
 **Input Parameters**:
 - word (string): Word to define
-
-**Output**: Definition and example usage of the specified word.
+- **Output**: Definition and example usage of the specified word.
 
 **Example Response**:
 ```
 📖 Definition of serendipity: The occurrence and development of events by chance in a happy or beneficial way.
 💡 Example: A fortunate stroke of serendipity came his way when he met his future wife on a flight.
 ```
-**Sources**: server/tools.js (590-618)
 
 ## **Model Context Protocol (MCP)**
 
