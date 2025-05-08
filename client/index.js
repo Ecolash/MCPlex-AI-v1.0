@@ -48,7 +48,7 @@ const key = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: key });
 
 async function chatLoop() {
-    console.log('\n\x1b[36mWelcome to your \x1b[1m\x1b[33mMCPxGenAI\x1b[0m\x1b[36m chat!\x1b[0m');
+    console.log('\n\x1b[36mWelcome to your \x1b[1m\x1b[33mMCPlex AI v1.0\x1b[0m\x1b[36m chat!\x1b[0m');
     console.log("\x1b[33mType \x1b[1m\x1b[31mEXIT\x1b[0m\x1b[33m to quit the chat.\x1b[0m\n");
 
     while (true) {
