@@ -27,7 +27,7 @@ async function main() {
     console.log('Connected to MCP server');
 
     const toolListResult = await client.listTools();
-    console.log('Available tools:', toolListResult.tools.map(tool => tool.name));
+    // console.log('Available tools:', toolListResult.tools.map(tool => tool.name));
 
     tools_ = toolListResult.tools.map(tool => {
         return {
@@ -48,8 +48,8 @@ const key = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: key });
 
 async function chatLoop() {
-    console.log('\n\x1b[36mWelcome to your X GenAI chat!\x1b[0m');
-    console.log("\x1b[33mType 'EXIT' to quit the chat.\x1b[0m\n");
+    console.log('\n\x1b[36mWelcome to your \x1b[1m\x1b[33mMCPxGenAI\x1b[0m\x1b[36m chat!\x1b[0m');
+    console.log("\x1b[33mType \x1b[1m\x1b[31mEXIT\x1b[0m\x1b[33m to quit the chat.\x1b[0m\n");
 
     while (true) {
         const question = await rl.question('\n\x1b[36m> \x1b[32mYou:\x1b[0m ');
