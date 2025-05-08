@@ -417,38 +417,6 @@ cd client
 node index.js
 ```
 
-The client connects to:
-- Google Gemini AI
-- MCP server
-- Provides a CLI interface
-
-### **System Interaction Flow**
-
-```text
-[User]
-    ↓
-[Client Process]
-    - Connects to Gemini using API key
-    - Sends query
-    ↓
-[Server Process]
-    - Receives query
-    - Maps to appropriate tool
-    - Executes tool
-    - Calls external APIs (if needed)
-    ↓
-[Client Process]
-    - Displays the tool result
-```
-
-##### Verification and Testing
-
-| Feature             | Example Query                          | Expected Output                          |
-|---------------------|----------------------------------------|-------------------------------------------|
-| Basic AI Response   | "What is the capital of France?"       | "Paris"                                   |
-| Twitter Tool        | "Post a tweet about the weather today" | Tweet posted via Twitter API              |
-| Movie Ratings Tool  | "What's the rating for The Matrix?"    | Ratings fetched from OMDB API             |
-
 ##### Troubleshooting
 
 | Issue                          | Cause                                | Solution                                 |
