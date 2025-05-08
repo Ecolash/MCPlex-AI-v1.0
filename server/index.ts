@@ -2,10 +2,12 @@ import express, { type Request, type Response } from "express";
 import { randomUUID } from 'node:crypto';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { parseStringPromise } from 'xml2js';
 import { createPost } from './mcp.tool';
 import { z } from 'zod';
+import cors from 'cors';
+
+console.log(process.env.TWITTER_API_KEY)
 
 // Define interfaces for the application
 interface NewsItem {
@@ -35,6 +37,13 @@ interface GitHubRepoResponse {
 
 // Create Express app
 const app = express();
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    methods: ['GET', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'MCP-Session-ID'],
+    exposedHeaders: ['MCP-Session-ID'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Create MCP server
@@ -279,51 +288,114 @@ const transports: TransportMap = {};
 
 // Handle MCP POST requests
 app.post('/mcp', async (req: Request, res: Response) => {
+    console.log('Received MCP request:', {
+        headers: req.headers,
+        body: req.body,
+        method: req.method,
+        url: req.url
+    });
+
     const sessionId = req.headers['mcp-session-id'] as string | undefined;
     let transport: StreamableHTTPServerTransport;
 
     if (sessionId && transports[sessionId]) {
+        console.log('Using existing transport for session:', sessionId);
         transport = transports[sessionId];
-    } else if (!sessionId && isInitializeRequest(req.body)) {
+    } else if (!sessionId && req.body && req.body.method === 'initialize') {
+        console.log('Initializing new transport for client');
         transport = new StreamableHTTPServerTransport({
             sessionIdGenerator: () => randomUUID(),
             onsessioninitialized: (sid: string) => {
+                console.log('Session initialized with ID:', sid);
                 transports[sid] = transport;
             }
         });
 
         transport.onclose = () => {
             if (transport.sessionId) {
+                console.log('Closing transport for session:', transport.sessionId);
                 delete transports[transport.sessionId];
             }
         };
 
         await server.connect(transport);
+        console.log('Connected transport to MCP server');
+
+        // Set the session ID in the response headers
+        if (transport.sessionId) {
+            console.log('Setting session ID in response headers:', transport.sessionId);
+            res.setHeader('MCP-Session-ID', transport.sessionId);
+            res.setHeader('Access-Control-Expose-Headers', 'MCP-Session-ID');
+        }
     } else {
+        console.error('Invalid request - no session ID or not an initialize request');
+        console.log('Request body:', JSON.stringify(req.body, null, 2));
+        console.log('Session ID:', sessionId);
+
         res.status(400).json({
             jsonrpc: '2.0',
             error: {
                 code: -32000,
                 message: 'Bad Request: No valid session ID provided',
             },
-            id: null,
+            id: req.body?.id || null,
         });
         return;
     }
 
-    await transport.handleRequest(req, res, req.body);
+    try {
+        // Let the transport handle the request
+        await transport.handleRequest(req, res, req.body);
+
+        // For initialize requests, log the session ID
+        if (req.body && req.body.method === 'initialize' && transport.sessionId) {
+            console.log('Initialize request handled with session ID:', transport.sessionId);
+        } else {
+            console.log('Request handled successfully');
+        }
+    } catch (error) {
+        console.error('Error handling request:', error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32603,
+                    message: 'Internal server error',
+                },
+                id: req.body?.id || null,
+            });
+        }
+    }
 });
 
 // Handle session requests
 const handleSessionRequest = async (req: Request, res: Response) => {
+    console.log('Received session request:', {
+        headers: req.headers,
+        method: req.method,
+        url: req.url
+    });
+
     const sessionId = req.headers['mcp-session-id'] as string | undefined;
     if (!sessionId || !transports[sessionId]) {
+        console.error('Invalid or missing session ID:', sessionId);
+        console.log('Available sessions:', Object.keys(transports));
         res.status(400).send('Invalid or missing session ID');
         return;
     }
 
+    console.log('Using transport for session:', sessionId);
     const transport = transports[sessionId];
-    await transport.handleRequest(req, res);
+
+    try {
+        await transport.handleRequest(req, res);
+        console.log('Session request handled successfully');
+    } catch (error) {
+        console.error('Error handling session request:', error);
+        if (!res.headersSent) {
+            res.status(500).send('Internal server error');
+        }
+    }
 };
 
 // Set up routes
