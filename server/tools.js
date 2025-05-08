@@ -160,19 +160,31 @@ import { promisify } from 'util';
             status: z.string().describe('The content of the tweet')
         }, 
         async (arg) => {
-            const { status } = arg;
-            console.log(`Creating tweet with status: ${status}`);
-            const result = await createPost(status);
-            console.log('Tweet result:', result);
+            try {
+                const { status } = arg;
+                console.log(`Creating tweet with status: ${status}`);
+                const result = await createPost(status);
+                console.log('Tweet result:', result);
 
-            return {
-                content: [
-                {
-                    type: 'text',
-                    text: `${FORMAT.GREEN}${FORMAT.BOLD}Tweet created successfully:${FORMAT.RESET} ${result.content[0].text}\n`
-                }
-                ]
-            };
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `${FORMAT.GREEN}${FORMAT.BOLD}Tweet created successfully:${FORMAT.RESET} ${result.content[0].text}\n`
+                        }
+                    ]
+                };
+            } catch (err) {
+                console.error("Error creating tweet:", err);
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `⚠️ Error creating tweet: ${err.message}`
+                        }
+                    ]
+                };
+            }
         }
     );
 
