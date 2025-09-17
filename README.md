@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/ecolash-mcplex-ai-v1-0-badge.png)](https://mseep.ai/app/ecolash-mcplex-ai-v1-0)
+
 # MCPlex-AI v1.0
 
 This document provides an introduction to MCPlex-AI v1.0, a system that integrates Google's Gemini large language model with external tools through a Model Context Protocol (MCP). Unlike typical chatbot frontends, MCPlex-AI runs entirely from the command line, giving users fine-grained control and a minimalistic interface to execute intelligent queries and trigger tool-based actions — all from a single terminal. The document covers the system's purpose, high-level architecture, key components, and interaction patterns. For detailed information about specific components, please refer to their respective sections:
